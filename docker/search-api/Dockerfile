@@ -13,6 +13,9 @@ WORKDIR /usr/src/app
 # Copy from host to image
 COPY . .
 
+# Install the AWSCLI
+RUN pip install awscli
+
 # http://nginx.org/en/linux_packages.html#RHEL-CentOS
 # Set up the yum repository to install the latest mainline version of Nginx
 RUN echo $'[nginx-mainline]\n\
@@ -39,6 +42,7 @@ RUN yum install -y yum-utils && \
     yum install -y nginx && \
     rm /etc/nginx/conf.d/default.conf && \
     mv nginx/nginx.conf /etc/nginx/nginx.conf && \
+    cp nginx/conf.d/search-api.conf /etc/nginx/conf.d/search-api.conf && \
     rm -rf nginx && \
     pip install -r src/search-adaptor/src/requirements.txt -r src/requirements.txt && \
     chmod +x start.sh && \
@@ -47,7 +51,11 @@ RUN yum install -y yum-utils && \
 # The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime. 
 # EXPOSE does not make the ports of the container accessible to the host.
 # Here 5000 is for the uwsgi socket, 8080 for nginx
-EXPOSE 5000 8080
+EXPOSE 5000 4444
+
+# setting the volumes here for AWS ECS deployment
+# see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bind-mounts.html
+VOLUME ["/usr/src/app/src/instance", "/usr/src/app/log"]
 
 # Set an entrypoint
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

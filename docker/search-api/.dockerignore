@@ -5,10 +5,10 @@ Dockerfile
 .dockerignore
 
 # Ignore the mounted nginx conf.d directory
-nginx/conf.d
+#nginx/conf.d
 
 # Ignore the flask instance folder
-src/instance
+#src/instance
 
 # Ignore search-schema from the submodule
 src/search-adaptor/src/search-schema
